@@ -1,35 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import AuthProvider from '../context/AuthContext';
+import PrivateRoute from '../routes/PrivateRoute';
+import Step1 from './Step1';
+import Step2 from './Step2';
+import Step3 from './Step3';
+import Dashboard from './Dashboard';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+    const [formData, setFormData] = useState({});
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    const nextStep = (data) => {
+        setFormData({ ...formData, ...data });
+    };
 
-export default App
+    return (
+        <AuthProvider>
+            <Router>
+                <Switch>
+                    <Route path="/" exact>
+                        <h1>Registration</h1>
+                        <Step1 next={nextStep} />
+                    </Route>
+                    <Route path="/step2">
+                        <Step2 next={nextStep} />
+                    </Route>
+                    <Route path="/step3">
+                        <Step3 data={formData} />
+                    </Route>
+                    <PrivateRoute path="/dashboard" component={Dashboard} />
+                    <Route path="/login">
+                        {/* Your login component here */}
+                    </Route>
+                </Switch>
+            </Router>
+        </AuthProvider>
+    );
+};
+
+export default App;
