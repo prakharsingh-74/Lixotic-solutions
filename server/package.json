@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "npm run dev"
+    "dev": "nodemon server.js"
   },
   "author": "Prakhar Singh",
   "license": "ISC",
