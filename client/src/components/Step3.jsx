@@ -1,21 +1,10 @@
-import React from 'react';
-import axios from 'axios';
-
-const Step3 = ({ data }) => {
-    const handleSubmit = async () => {
-        try {
-            const response = await axios.post('/api/auth/register', data);
-            alert(response.data.message);
-        } catch (error) {
-            alert('Error registering');
-        }
-    };
-
+const Step3 = ({ formData }) => {
     return (
         <div>
-            <h2>Review your details</h2>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-            <button onClick={handleSubmit}>Submit</button>
+            <h2>Step 3: Review Your Information</h2>
+            <p><strong>Name:</strong> {formData.name}</p>
+            <p><strong>Email:</strong> {formData.email}</p>
+            <p><strong>Address:</strong> {formData.address}</p>
         </div>
     );
 };

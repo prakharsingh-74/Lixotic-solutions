@@ -1,11 +1,12 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 const Step1 = ({ next }) => {
     const { register, handleSubmit } = useForm();
+    const navigate = useNavigate();
 
     const onSubmit = (data) => {
-        next(data);
+        next(data, () => navigate('/step2'));
     };
 
     return (
