@@ -1,17 +1,21 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import React, { useContext, useEffect } from 'react';
+import AuthContext from '../context/AuthContext';
 
 const Dashboard = () => {
-    const { user } = useContext(AuthContext);
+  const { user, getUserDetails } = useContext(AuthContext);
 
-    return (
-        <div>
-            <h1>Welcome, {user.name}</h1>
-            <p>Email: {user.email}</p>
-            <p>Address: {user.address}</p>
-            <p>Phone Number: {user.phoneNumber}</p>
-        </div>
-    );
+  useEffect(() => {
+    getUserDetails();
+  }, []);
+
+  return (
+    <div>
+      <h2>Welcome, {user?.name}</h2>
+      <p>Email: {user?.email}</p>
+      <p>Address: {user?.address}</p>
+      <p>Phone Number: {user?.phoneNumber}</p>
+    </div>
+  );
 };
 
 export default Dashboard;

@@ -1,35 +1,30 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import axios from 'axios';
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const res = await axios.get('/api/auth/user', {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    setUser(res.data);
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-            setLoading(false);
-        };
-        fetchUser();
-    }, []);
+  const loginUser = async (loginData) => {
+    const res = await axios.post('/api/login', loginData);
+    localStorage.setItem('token', res.data.token);
+    setUser(res.data);
+  };
 
-    return (
-        <AuthContext.Provider value={{ user, setUser, loading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const getUserDetails = async () => {
+    const token = localStorage.getItem('token');
+    const res = await axios.get(`/api/user/${user._id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setUser(res.data);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loginUser, getUserDetails }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-export default AuthProvider;
+export default AuthContext;

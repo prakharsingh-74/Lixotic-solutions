@@ -1,12 +1,20 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const Step3 = ({ formData }) => {
-    return (
-        <div>
-            <h2>Step 3: Review Your Information</h2>
-            <p><strong>Name:</strong> {formData.name}</p>
-            <p><strong>Email:</strong> {formData.email}</p>
-            <p><strong>Address:</strong> {formData.address}</p>
-        </div>
-    );
+  const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    navigate('/dashboard');
+  };
+
+  return (
+    <div>
+      <h3>Review your data:</h3>
+      {/* Display data */}
+      <button onClick={handleSubmit}>Submit</button>
+    </div>
+  );
 };
 
 export default Step3;
