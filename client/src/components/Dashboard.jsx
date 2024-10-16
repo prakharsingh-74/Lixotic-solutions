@@ -1,19 +1,20 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 const Dashboard = () => {
-  const { user, getUserDetails } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    getUserDetails();
-  }, []);
+  if (!user) return null;
 
   return (
     <div>
-      <h2>Welcome, {user?.name}</h2>
-      <p>Email: {user?.email}</p>
-      <p>Address: {user?.address}</p>
-      <p>Phone Number: {user?.phoneNumber}</p>
+      <h2>Dashboard</h2>
+      <p>Name: {user.name}</p>
+      <p>Email: {user.email}</p>
+      <button onClick={() => navigate('/edit-profile')}>Edit Profile</button>
+      <button onClick={logout}>Logout</button>
     </div>
   );
 };

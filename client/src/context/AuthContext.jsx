@@ -1,30 +1,38 @@
-import React, { createContext, useState } from 'react';
-import axios from 'axios';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getUserProfile, registerUser } from '../api';
+import { useAuth } from '../hooks/useAuth';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+    const { token } = useAuth();
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  const loginUser = async (loginData) => {
-    const res = await axios.post('/api/login', loginData);
-    localStorage.setItem('token', res.data.token);
-    setUser(res.data);
-  };
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            if (token) {
+                try {
+                    const profile = await getUserProfile(token);
+                    setUser(profile);
+                } catch (error) {
+                    console.error('Failed to fetch user profile:', error);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false);
+            }
+        };
 
-  const getUserDetails = async () => {
-    const token = localStorage.getItem('token');
-    const res = await axios.get(`/api/user/${user._id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setUser(res.data);
-  };
+        fetchUserProfile();
+    }, [token]);
 
-  return (
-    <AuthContext.Provider value={{ user, loginUser, getUserDetails }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider value={{ user, loading }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
-export default AuthContext;
+export const useAuthContext = () => useContext(AuthContext);

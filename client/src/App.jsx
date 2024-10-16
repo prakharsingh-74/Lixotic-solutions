@@ -1,22 +1,27 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Step1 from './components/Step1';
-import Step2 from './components/Step2';
-import Step3 from './components/Step3';
+import FormSteps from './pages/FormSteps';
+import LoginPage from './pages/LoginPage';
 import Dashboard from './components/Dashboard';
-import Login from './components/Login';
-import { AuthProvider } from './context/AuthContext';
+import EditProfile from './components/EditProfile';
+import AuthProvider from './context/AuthContext';
+import PrivateRoute from './routes/PrivateRoute';
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Step1 />} />
-          <Route path="/step2" element={<Step2 />} />
-          <Route path="/step3" element={<Step3 />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<FormSteps />} />
+          <Route
+            path="/dashboard"
+            element={<PrivateRoute><Dashboard /></PrivateRoute>}
+          />
+          <Route
+            path="/edit-profile"
+            element={<PrivateRoute><EditProfile /></PrivateRoute>}
+          />
         </Routes>
       </Router>
     </AuthProvider>

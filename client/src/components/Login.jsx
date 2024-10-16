@@ -1,35 +1,24 @@
-import React, { useContext } from 'react';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import AuthContext from '../context/AuthContext';
+import React, { useState } from 'react';
+import { loginUser } from '../api';
+import useAuth from '../hooks/useAuth';
 
 const Login = () => {
-  const { register, handleSubmit } = useForm();
-  const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const onSubmit = async (data) => {
-    try {
-      const res = await axios.post('/api/login', data);
-      const token = res.data.token;
-
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-      setUser(token);
-      
-      navigate('/dashboard');
-    } catch (err) {
-      console.error(err);
-    }
+  const handleSubmit = async () => {
+    const user = await loginUser({ email, password });
+    login(user);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('email', { required: true })} placeholder="Email" />
-      <input {...register('password', { required: true })} placeholder="Password" type="password" />
-      <button type="submit">Login</button>
-    </form>
+    <div>
+      <h2>Login</h2>
+      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={handleSubmit}>Login</button>
+    </div>
   );
 };
 
