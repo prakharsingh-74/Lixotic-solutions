@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getUserProfile, registerUser } from '../api';
+import { getUserProfile, registerUser, loginUser } from '../api';
 import { useAuth } from '../hooks/useAuth';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const { token } = useAuth();
+    const { token, setToken } = useAuth();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -28,8 +29,25 @@ export const AuthProvider = ({ children }) => {
         fetchUserProfile();
     }, [token]);
 
+    const login = async (email, password) => {
+        try {
+            const { token, userProfile } = await loginUser(email, password);
+            setToken(token);
+            setUser(userProfile);
+            setError(null);
+        } catch (error) {
+            console.error('Login failed:', error);
+            setError('Invalid email or password');
+        }
+    };
+
+    const logout = () => {
+        setUser(null);
+        setToken(null);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading }}>
+        <AuthContext.Provider value={{ user, loading, error, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,33 +1,25 @@
 const express = require('express');
-const User = require('./models/user');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const userRoutes = require('./routes/userRoutes');
+const dotenv = require('dotenv');
 
-const router = express.Router();
+dotenv.config();
 
-router.post('/api/users/register', async (req, res) => {
-  const { name, email, password } = req.body;
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-  try {
-    const user = new User({ name, email, password });
-    await user.save();
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+app.use('/api/users', userRoutes);
 
-router.post('/api/users/login', async (req, res) => {
-  const { email, password } = req.body;
+const PORT = process.env.PORT || 5000;
 
-  try {
-    const user = await User.findOne({ email });
-    if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    res.status(200).json({ message: 'Login successful', user });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-module.exports = router;
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('MongoDB connected');
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+})
+.catch((error) => console.error('Database connection error:', error));

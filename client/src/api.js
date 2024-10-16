@@ -1,45 +1,32 @@
-const API_URL = 'http://localhost:5000/api';
+import axios from 'axios';
 
 export const registerUser = async (userData) => {
-    const response = await fetch('http://localhost:5000/api/users/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to register user');
-    }
-
-    return response.json();
+  try {
+    const response = await axios.post('http://localhost:5000/api/users/register', userData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message || 'Registration failed');
+  }
 };
 
-export const loginUser = async (credentials) => {
-    const response = await fetch('http://localhost:5000/api/users/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to login');
-    }
-}
+export const loginUser = async (userData) => {
+  try {
+    const response = await axios.post('http://localhost:5000/api/users/login', userData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message || 'Login failed');
+  }
+};
 
 export const getUserProfile = async (token) => {
-    const response = await fetch(`${API_URL}/profile`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        },
+    const response = await axios.get(`${API_URL}/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
     });
-    return await response.json();
-};
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch user profile');
+    }
+}
 
 export const updateUserProfile = async (token, updatedData) => {
     const response = await fetch(`${API_URL}/profile`, {

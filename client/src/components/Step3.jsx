@@ -1,5 +1,3 @@
-// src/components/StepThree.js
-
 import React from 'react';
 
 const StepThree = ({ userData, onSubmit, onPrev }) => {

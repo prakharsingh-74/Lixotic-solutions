@@ -1,32 +1,25 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import FormSteps from './pages/FormSteps';
-import LoginPage from './pages/LoginPage';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { FormProvider } from './components/FormContext';
+import { Step1, Step2, Step3 } from './pages/FormSteps';
 import Dashboard from './components/Dashboard';
-import EditProfile from './components/EditProfile';
-import AuthProvider from './context/AuthContext';
-import PrivateRoute from './routes/PrivateRoute';
+import Login from './components/Login';
+import ProtectedRoute from './routes/ProtectedRoute';
 
 const App = () => {
   return (
-    <AuthProvider>
+    <FormProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<FormSteps />} />
-          <Route
-            path="/dashboard"
-            element={<PrivateRoute><Dashboard /></PrivateRoute>}
-          />
-          <Route
-            path="/edit-profile"
-            element={<PrivateRoute><EditProfile /></PrivateRoute>}
-          />
-          {/* Redirect from root to login page */}
-          <Route path="/" element={<Navigate to="/register" replace />} />
+          <Route path="/" element={<Step1 />} />
+          <Route path="/step1" element={<Step1 />} />
+          <Route path="/step2" element={<Step2 />} />
+          <Route path="/step3" element={<Step3 />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<ProtectedRoute component={Dashboard} />} />
         </Routes>
       </Router>
-    </AuthProvider>
+    </FormProvider>
   );
 };
 

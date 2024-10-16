@@ -1,112 +1,47 @@
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('../models/User');
-const Session = require('../models/Session');
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
-const registerUser = async (req, res) => {
+exports.registerUser = async (req, res) => {
   const { name, email, password, address, phoneNumber } = req.body;
 
-  // Check if user already exists
-  const userExists = await User.findOne({ email });
-  if (userExists) {
-    return res.status(400).json({ message: 'User already exists' });
-  }
-
-  const user = new User({
-    name,
-    email,
-    password,
-    address,
-    phoneNumber,
-  });
-
-  await user.save();
-  
-  const token = generateToken(user._id);
-
-  const session = new Session({ userId: user._id, token });
-  await session.save();
-
-  res.status(201).json({
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    token,
-  });
-};
-
-const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await User.findOne({ email });
-
-  if (user && (await bcrypt.compare(password, user.password))) {
-    const token = generateToken(user._id);
-
-    const session = new Session({ userId: user._id, token });
-    await session.save();
-
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token,
-    });
-  } else {
-    res.status(401).json({ message: 'Invalid email or password' });
-  }
-};
-
-const getUserProfile = async (req, res) => {
-  const user = await User.findById(req.params.id);
-
-  if (user) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      address: user.address,
-      phoneNumber: user.phoneNumber,
-    });
-  } else {
-    res.status(404).json({ message: 'User not found' });
-  }
-};
-
-const updateUserProfile = async (req, res) => {
-  const user = await User.findById(req.params.id);
-
-  if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    user.address = req.body.address || user.address;
-    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
-
-    if (req.body.password) {
-      user.password = req.body.password;
+  try {
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User already exists' });
     }
 
-    const updatedUser = await user.save();
-
-    res.json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      address: updatedUser.address,
-      phoneNumber: updatedUser.phoneNumber,
-    });
-  } else {
-    res.status(404).json({ message: 'User not found' });
+    const user = await User.create({ name, email, password, address, phoneNumber });
+    res.status(201).json({ token: generateToken(user._id) });
+  } catch (error) {
+    res.status(500).json({ message: 'Error registering user' });
   }
 };
 
-module.exports = {
-  registerUser,
-  loginUser,
-  getUserProfile,
-  updateUserProfile,
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      res.json({ token: generateToken(user._id) });
+    } else {
+      res.status(401).json({ message: 'Invalid credentials' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error logging in' });
+  }
+};
+
+exports.getUserProfile = async (req, res) => {
+  const user = await User.findById(req.user.id);
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404).json({ message: 'User not found' });
+  }
 };
