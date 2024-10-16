@@ -1,18 +1,18 @@
 const API_URL = 'http://localhost:5000/api';
 
 export const registerUser = async (userData) => {
-    const response = await fetch('http://your-api-url.com/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
+    const response = await fetch('http://localhost:5000/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
     });
     if (!response.ok) {
-      throw new Error('Failed to fetch');
+        throw new Error('Failed to fetch');
     }
     return await response.json();
-  };  
+};
 
 export const getUserProfile = async (token) => {
     const response = await fetch(`${API_URL}/profile`, {

@@ -3,14 +3,10 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Session = require('../models/Session');
 
-// Helper function to generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 };
 
-// @desc    Register a new user
-// @route   POST /api/register
-// @access  Public
 const registerUser = async (req, res) => {
   const { name, email, password, address, phoneNumber } = req.body;
 
@@ -20,21 +16,18 @@ const registerUser = async (req, res) => {
     return res.status(400).json({ message: 'User already exists' });
   }
 
-  // Create new user
   const user = new User({
     name,
     email,
-    password, // Password will be hashed by the User model pre-save middleware
+    password,
     address,
     phoneNumber,
   });
 
   await user.save();
   
-  // Generate token
   const token = generateToken(user._id);
 
-  // Store token in MongoDB session
   const session = new Session({ userId: user._id, token });
   await session.save();
 
@@ -46,20 +39,14 @@ const registerUser = async (req, res) => {
   });
 };
 
-// @desc    Authenticate user & get token
-// @route   POST /api/login
-// @access  Public
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  // Find user by email
   const user = await User.findOne({ email });
 
   if (user && (await bcrypt.compare(password, user.password))) {
-    // Generate token
     const token = generateToken(user._id);
 
-    // Store token in MongoDB session
     const session = new Session({ userId: user._id, token });
     await session.save();
 
@@ -74,9 +61,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Get user profile
-// @route   GET /api/user/:id
-// @access  Private (protected by auth middleware)
 const getUserProfile = async (req, res) => {
   const user = await User.findById(req.params.id);
 
