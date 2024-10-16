@@ -1,47 +1,37 @@
+const API_URL = 'http://localhost:5000/api';
+
 export const registerUser = async (userData) => {
-    const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
+    const response = await fetch('http://your-api-url.com/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
     });
-
     if (!response.ok) {
-        throw new Error('Failed to register user');
+      throw new Error('Failed to fetch');
     }
-
     return await response.json();
-};
-
-export const loginUser = async (credentials) => {
-    const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to login user');
-    }
-
-    return await response.json();
-};
+  };  
 
 export const getUserProfile = async (token) => {
-    const response = await fetch('/api/user/profile', {
+    const response = await fetch(`${API_URL}/profile`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
         },
     });
+    return await response.json();
+};
 
-    if (!response.ok) {
-        throw new Error('Failed to fetch user profile');
-    }
-
+export const updateUserProfile = async (token, updatedData) => {
+    const response = await fetch(`${API_URL}/profile`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedData),
+    });
     return await response.json();
 };

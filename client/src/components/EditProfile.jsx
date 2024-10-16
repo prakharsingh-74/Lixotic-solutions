@@ -1,45 +1,55 @@
-import React, { useState, useContext } from 'react';
-import AuthContext from '../context/AuthContext';
+import React, { useState } from 'react';
+import { useAuthContext } from '../context/AuthContext';
 import { updateUserProfile } from '../api';
 
 const EditProfile = () => {
-  const { user } = useContext(AuthContext);
-  const [formData, setFormData] = useState({
-    name: user.name,
-    address: user.address,
-    phoneNumber: user.phoneNumber,
-  });
+    const { user, loading } = useAuthContext();
+    const [name, setName] = useState(user ? user.name : '');
+    const [email, setEmail] = useState(user ? user.email : '');
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+        const updatedData = { name, email };
 
-  const handleSubmit = async () => {
-    await axios.put(`/api/user/${user._id}`, formData);
-  };
+        try {
+            const response = await updateUserProfile(token, updatedData);
+            console.log('Profile updated:', response);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
 
-  return (
-    <div>
-      <h2>Edit Profile</h2>
-      <input
-        type="text"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-      />
-      <input
-        type="text"
-        name="address"
-        value={formData.address}
-        onChange={handleChange}
-      />
-      <input
-        type="text"
-        name="phoneNumber"
-        value={formData.phoneNumber}
-        onChange={handleChange}
-      />
-      <button onClick={handleSubmit}>Save</button>
-    </div>
-  );
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <div className="edit-profile">
+            <h2>Edit Profile</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label htmlFor="name">Name:</label>
+                    <input
+                        type="text"
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="email">Email:</label>
+                    <input
+                        type="email"
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <button type="submit">Update Profile</button>
+            </form>
+        </div>
+    );
 };
 
 export default EditProfile;

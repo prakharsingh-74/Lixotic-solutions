@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import FormSteps from './pages/FormSteps';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './components/Dashboard';
@@ -22,6 +22,8 @@ const App = () => {
             path="/edit-profile"
             element={<PrivateRoute><EditProfile /></PrivateRoute>}
           />
+          {/* Redirect from root to login page */}
+          <Route path="/" element={<Navigate to="/register" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

@@ -1,22 +1,19 @@
-import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
+import React from 'react';
+import { useAuthContext } from '../context/AuthContext';
 
 const Dashboard = () => {
-  const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+    const { user, loading } = useAuthContext();
 
-  if (!user) return null;
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
-  return (
-    <div>
-      <h2>Dashboard</h2>
-      <p>Name: {user.name}</p>
-      <p>Email: {user.email}</p>
-      <button onClick={() => navigate('/edit-profile')}>Edit Profile</button>
-      <button onClick={logout}>Logout</button>
-    </div>
-  );
+    return (
+        <div className="dashboard">
+            <h1>Welcome, {user ? user.name : 'Guest'}!</h1>
+            {/* Other dashboard content */}
+        </div>
+    );
 };
 
 export default Dashboard;

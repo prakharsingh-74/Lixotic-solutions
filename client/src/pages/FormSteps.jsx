@@ -1,57 +1,52 @@
 import React, { useState } from 'react';
-import StepOne from '../components/StepOne';
-import StepTwo from '../components/StepTwo';
-import StepThree from '../components/StepThree';
+import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../api';
 
 const FormSteps = () => {
-    const [step, setStep] = useState(1);
-    const [userData, setUserData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        address: '',
-        phoneNumber: '',
-    });
+  const [userData, setUserData] = useState({ email: '', password: '' });
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-    const handleNext = (data) => {
-        setUserData((prevData) => ({
-            ...prevData,
-            ...data,
-        }));
-        setStep((prevStep) => prevStep + 1);
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await registerUser(userData);
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration failed:', error);
+      setErrorMessage('Registration failed. Please try again.');
+    }
+  };
 
-    const handlePrev = () => {
-        setStep((prevStep) => prevStep - 1);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await registerUser(userData);
-            console.log('Registration Successful:', response);
-        } catch (error) {
-            console.error('Registration Failed:', error);
-        }
-    };
-
-    return (
-        <div className="form-steps">
-            <h2>User Registration</h2>
-            <form onSubmit={step === 3 ? handleSubmit : (e) => e.preventDefault()}>
-                {step === 1 && (
-                    <StepOne userData={userData} onNext={handleNext} />
-                )}
-                {step === 2 && (
-                    <StepTwo userData={userData} onNext={handleNext} onPrev={handlePrev} />
-                )}
-                {step === 3 && (
-                    <StepThree userData={userData} onSubmit={handleSubmit} onPrev={handlePrev} />
-                )}
-            </form>
+  return (
+    <div className="form-steps">
+      <h2>Register</h2>
+      {errorMessage && <p className="error">{errorMessage}</p>} {/* Show error message */}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            value={userData.email}
+            onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+            required
+          />
         </div>
-    );
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value={userData.password}
+            onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+            required
+          />
+        </div>
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  );
 };
 
 export default FormSteps;
