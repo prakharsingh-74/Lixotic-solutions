@@ -16,7 +16,7 @@ const App = () => {
           <Route path="/step2" element={<Step2 />} />
           <Route path="/step3" element={<Step3 />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<ProtectedRoute component={Dashboard} />} />
+          <Route path="/dashboard" element={<ProtectedRoute component={<Dashboard/>} />} />
         </Routes>
       </Router>
     </FormProvider>

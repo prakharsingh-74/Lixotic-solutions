@@ -90,7 +90,6 @@ const Step3 = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Registration successful:', data);
-        // Redirect to a success page or dashboard
         navigate('/login'); 
       } else {
         const errorData = await response.json();
