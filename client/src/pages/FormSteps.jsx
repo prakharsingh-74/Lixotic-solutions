@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../api';
+import { registerUser } from '../api';  
 
 const FormSteps = () => {
-  const [userData, setUserData] = useState({ email: '', password: '' });
+  const [userData, setUserData] = useState({ name: '', email: '', password: '' }); // Added name field
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
@@ -23,6 +23,16 @@ const FormSteps = () => {
       <h2>Register</h2>
       {errorMessage && <p className="error">{errorMessage}</p>} {/* Show error message */}
       <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            value={userData.name} // Bind name to state
+            onChange={(e) => setUserData({ ...userData, name: e.target.value })} // Update state
+            required
+          />
+        </div>
         <div className="form-group">
           <label htmlFor="email">Email:</label>
           <input
