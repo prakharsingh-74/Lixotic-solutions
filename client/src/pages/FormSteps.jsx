@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FormContext } from '../components/FormContext';
 
@@ -19,6 +19,7 @@ const Step1 = () => {
         placeholder="Name"
         value={formData.name || ''}
         onChange={handleChange}
+        required // Optional: Enforce field requirement
       />
       <input
         type="email"
@@ -26,6 +27,7 @@ const Step1 = () => {
         placeholder="Email"
         value={formData.email || ''}
         onChange={handleChange}
+        required // Optional: Enforce field requirement
       />
       <input
         type="password"
@@ -33,6 +35,7 @@ const Step1 = () => {
         placeholder="Password"
         value={formData.password || ''}
         onChange={handleChange}
+        required // Optional: Enforce field requirement
       />
       <button onClick={() => navigate('/step2')}>Next</button>
     </div>
@@ -56,6 +59,7 @@ const Step2 = () => {
         placeholder="Address"
         value={formData.address || ''}
         onChange={handleChange}
+        required // Optional: Enforce field requirement
       />
       <input
         type="text"
@@ -63,6 +67,7 @@ const Step2 = () => {
         placeholder="Phone Number"
         value={formData.phoneNumber || ''}
         onChange={handleChange}
+        required // Optional: Enforce field requirement
       />
       <button onClick={() => navigate('/step1')}>Previous</button>
       <button onClick={() => navigate('/step3')}>Next</button>
@@ -70,13 +75,16 @@ const Step2 = () => {
   );
 };
 
-
 const Step3 = () => {
   const { formData } = useContext(FormContext);
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    console.log('Submitting data:', formData);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Omit the password field when logging
+    const { password, ...dataToLog } = formData; 
+    console.log('Submitting data:', dataToLog); // Only log sensitive info without the password
 
     try {
       const response = await fetch('http://localhost:5000/api/users/register', {
@@ -90,13 +98,13 @@ const Step3 = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Registration successful:', data);
-        navigate('/login'); 
+        navigate('/login'); // Redirect to login page
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData.message);
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Unexpected error:', error);
     }
   };
 
